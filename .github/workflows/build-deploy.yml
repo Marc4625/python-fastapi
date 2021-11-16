@@ -28,7 +28,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5 
-          
+
     runs-on: ubuntu-latest
     steps: 
       - name: pulling git repo 
@@ -48,5 +48,22 @@ jobs:
           pip install pytest
           pytest -v
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_ACCESS_TOKEN}}
 
-      
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v1
+        with:
+          context: ./
+          file: ./Dockerfile
+          builder: ${{steps.buildx.outputs.name}}
+          push: true
+          tags: ${{secrets.DOCKER_HUB_USERNAME}}/pythonfastapi:latest 
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Image digest
+        run: echo ${{steps.docker_build.outputs.digest}} 

@@ -56,7 +56,7 @@ app.include_router(vote.router)
 # Path operation
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Python API Development!"}
+    return {"message": "Welcome to Python API Development, and successfully deployed from CI/CD pipeline!"}
 
 
 
